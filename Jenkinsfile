@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        SERVER_IP = credentials('prod-dash-server-dash-IP') // Using stored IP credential
-        IMAGE_NAME = 'rahul/myapp' // Replace with your Docker Hub username/repo
+        SERVER_IP = credentials('prod-dash-server-dash-IP') 
+        IMAGE_NAME = 'kalamkaar/flaskapp' 
         IMAGE_TAG = "${IMAGE_NAME}:${BUILD_NUMBER}"
     }
     stages {
