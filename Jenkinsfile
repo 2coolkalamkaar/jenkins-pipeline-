@@ -27,19 +27,20 @@ pipeline {
 
                         # SSH into the server to deploy using the stored key
                         ssh -i ${ssh_key} -o StrictHostKeyChecking=no ${remote_user}@${SERVER_IP} << EOF
-                            # Unzip to the app directory
-                            unzip -o /home/rahul/myapp.zip -d /home/rahul/app/
-                            
-                            # Activate virtual environment
-                            source /home/rahul/app/venv/bin/activate
-                            
-                            # Install dependencies
-                            cd /home/rahul/app/
-                            pip install flask
-                            
-                            # Restart the service
-                            sudo systemctl restart flaskapp.service
-                        EOF
+                        
+                        # Unzip to the app directory
+                        unzip -o /home/rahul/myapp.zip -d /home/rahul/app/
+                        
+                        # Activate virtual environment
+                        source /home/rahul/app/venv/bin/activate
+                        
+                        # Install dependencies
+                        cd /home/rahul/app/
+                        pip install flask
+                        
+                        # Restart the service
+                        sudo systemctl restart flaskapp.service
+EOF
                     """
                 }
             }
