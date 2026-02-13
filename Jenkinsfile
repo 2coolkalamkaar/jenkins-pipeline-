@@ -60,6 +60,21 @@ pipeline {
                 }
             }
         }
+
+        stage('Trivy Image Scan') {
+            steps {
+                script {
+                    echo 'Scanning Docker Image with Trivy...'
+                    // Use docker run directly to avoid installing trivy locally.
+                    // Mounting docker.sock allows Trivy to see the images on the host.
+                    sh """
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v /root/.cache/:/root/.cache/ \
+                        aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL ${IMAGE_TAG}
+                    """
+                }
+            }
+        }
         
         stage('Push to Docker Hub') {
             steps {
