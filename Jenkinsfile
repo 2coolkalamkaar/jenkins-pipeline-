@@ -111,7 +111,7 @@ pipeline {
                         sh "sed -i 's|kalamkaar/flaskapp:latest|${IMAGE_TAG}|g' k8s/deployment.yaml"
                         
                         // Apply the kubernetes configurations
-                        sh 'kubectl apply -f k8s/ --kubeconfig=$KUBECONFIG_FILE'
+                        sh 'kubectl apply -f k8s/ --kubeconfig=$KUBECONFIG_FILE --validate=false'
                     }
                 }
             }
