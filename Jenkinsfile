@@ -102,16 +102,16 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Kubernetes...'
-                    // Provide Jenkins access to the KUBECONFIG secret file
-                    withCredentials([file(credentialsId: 'k8s-config', variable: 'KUBECONFIG_FILE')]) {
-                        // Let kubectl know where the config is
-                        sh 'export KUBECONFIG=$KUBECONFIG_FILE'
-                        
+                    // Authenticate using the Service Account Token and API Server URL
+                    withCredentials([
+                        string(credentialsId: 'k8s-token', variable: 'K8S_TOKEN'),
+                        string(credentialsId: 'k8s-server-url', variable: 'K8S_URL')
+                    ]) {
                         // Dynamically update the image tag in deployment.yaml
                         sh "sed -i 's|kalamkaar/flaskapp:latest|${IMAGE_TAG}|g' k8s/deployment.yaml"
                         
                         // Apply the kubernetes configurations
-                        sh 'kubectl apply -f k8s/ --kubeconfig=$KUBECONFIG_FILE --validate=false'
+                        sh 'kubectl apply -f k8s/ --server=$K8S_URL --token=$K8S_TOKEN --insecure-skip-tls-verify=true --validate=false'
                     }
                 }
             }
