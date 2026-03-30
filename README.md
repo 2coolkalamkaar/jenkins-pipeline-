@@ -10,12 +10,14 @@ This project is a simple Task Manager application built with **Flask** (Python),
 *   **Parallel Execution:** Builds Docker images and deploys to production server in parallel.
 *   **Security Scanning:** Integrated **Trivy** image scanning to detect vulnerabilities.
 *   **Automated Deployment:** Deploys artifacts to a production server via SSH and systemd.
+*   **Kubernetes Ready:** Fully automated deployment to a Kubernetes cluster using Service Account Tokens.
 
 ## 🛠️ Technology Stack
 
 *   **Backend:** Python, Flask
 *   **Containerization:** Docker
 *   **CI/CD:** Jenkins (Groovy Pipeline)
+*   **Orchestration:** Kubernetes
 *   **Security:** Trivy (Aqua Security)
 *   **OS:** Linux (Debian/Ubuntu)
 
@@ -25,6 +27,9 @@ This project is a simple Task Manager application built with **Flask** (Python),
 ├── app.py              # Main Flask application
 ├── Dockerfile          # Docker configuration
 ├── Jenkinsfile         # CI/CD Pipeline definition
+├── k8s/                # Kubernetes Manifests
+│   ├── deployment.yaml # K8s Deployment config
+│   └── service.yaml    # K8s NodePort Service config
 ├── requirements.txt    # Python dependencies
 ├── templates/          # HTML templates
 │   └── index.html      # Main page
@@ -83,6 +88,7 @@ The `Jenkinsfile` defines the following stages:
     *   **Build Docker Image:** Builds the Docker image concurrently.
 4.  **Trivy Image Scan:** Scans the built Docker image for **HIGH** and **CRITICAL** vulnerabilities using a Trivy container.
 5.  **Push to Docker Hub:** Logs in to Docker Hub and pushes the tagged image (`latest` + Build Number).
+6.  **Deploy to Kubernetes:** Dynamically updates the image tag in `k8s/deployment.yaml` and applies the deployment smoothly to a Kubernetes cluster using a Service Account token.
 
 ## 🔑 Configuration Requirements
 
@@ -92,9 +98,11 @@ To run this pipeline, you need the following **Jenkins Credentials**:
 | :--- | :--- | :--- |
 | `prod-dash-server-dash-IP` | Secret Text | Public IP address of the Production Server. |
 | `docker-creds` | Username with Password | Docker Hub credentials for pushing images. |
+| `k8s-token` | Secret Text | Kubernetes Service Account Token with deploy permissions. |
+| `k8s-server-url` | Secret Text | Full URL of the Kubernetes API Server (e.g. `https://192.168.1.1:6443`). |
 
 **Server Requirements:**
-*   **Jenkins Server:** Needs `docker` installed and the `jenkins` user added to the `docker` group.
+*   **Jenkins Server:** Needs `docker` and `kubectl` installed. The `jenkins` user must be added to the `docker` group.
 *   **Production Server:** Needs `python3`, `pip`, `unzip`, and a configured systemd service (`flaskapp.service`).
 *   **SSH Access:** Jenkins must have SSH access to the Production Server (keys configured in `~/.ssh/`).
 
