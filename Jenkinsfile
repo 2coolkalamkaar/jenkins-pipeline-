@@ -97,5 +97,24 @@ pipeline {
                 }
             }
         }
+        
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    echo 'Deploying to Kubernetes...'
+                    // Provide Jenkins access to the KUBECONFIG secret file
+                    withCredentials([file(credentialsId: 'k8s-config', variable: 'KUBECONFIG_FILE')]) {
+                        // Let kubectl know where the config is
+                        sh 'export KUBECONFIG=$KUBECONFIG_FILE'
+                        
+                        // Dynamically update the image tag in deployment.yaml
+                        sh "sed -i 's|kalamkaar/flaskapp:latest|${IMAGE_TAG}|g' k8s/deployment.yaml"
+                        
+                        // Apply the kubernetes configurations
+                        sh 'kubectl apply -f k8s/ --kubeconfig=$KUBECONFIG_FILE'
+                    }
+                }
+            }
+        }
     }
 }
