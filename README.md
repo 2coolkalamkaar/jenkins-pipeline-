@@ -2,7 +2,7 @@
 
 This project is a simple Task Manager application built with **Flask** (Python), containerized with **Docker**, and deployed using a comprehensive **Jenkins CI/CD pipeline**.
 
-## 🚀 Features
+## Features
 
 *   **Web Application:** A simple Todo/Task manager built with Flask.
 *   **CI/CD Pipeline:** Automated pipeline using Jenkins.
@@ -12,7 +12,7 @@ This project is a simple Task Manager application built with **Flask** (Python),
 *   **Automated Deployment:** Deploys artifacts to a production server via SSH and systemd.
 *   **Kubernetes Ready:** Fully automated deployment to a Kubernetes cluster using Service Account Tokens.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 *   **Backend:** Python, Flask
 *   **Containerization:** Docker
@@ -21,7 +21,7 @@ This project is a simple Task Manager application built with **Flask** (Python),
 *   **Security:** Trivy (Aqua Security)
 *   **OS:** Linux (Debian/Ubuntu)
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 ├── app.py              # Main Flask application
@@ -36,7 +36,7 @@ This project is a simple Task Manager application built with **Flask** (Python),
 └── README.md           # Documentation
 ```
 
-## ⚙️ Setup & Installation
+## Setup & Installation
 
 ### Local Development
 
@@ -75,7 +75,7 @@ This project is a simple Task Manager application built with **Flask** (Python),
     docker run -p 5000:5000 task-manager
     ```
 
-## 🔄 Jenkins Pipeline Overview
+## Jenkins Pipeline Overview
 
 The `Jenkinsfile` defines the following stages:
 
@@ -90,7 +90,7 @@ The `Jenkinsfile` defines the following stages:
 5.  **Push to Docker Hub:** Logs in to Docker Hub and pushes the tagged image (`latest` + Build Number).
 6.  **Deploy to Kubernetes:** Dynamically updates the image tag in `k8s/deployment.yaml` and applies the deployment smoothly to a Kubernetes cluster using a Service Account token.
 
-## 🔑 Configuration Requirements
+## Configuration Requirements
 
 To run this pipeline, you need the following **Jenkins Credentials**:
 
@@ -106,7 +106,7 @@ To run this pipeline, you need the following **Jenkins Credentials**:
 *   **Production Server:** Needs `python3`, `pip`, `unzip`, and a configured systemd service (`flaskapp.service`).
 *   **SSH Access:** Jenkins must have SSH access to the Production Server (keys configured in `~/.ssh/`).
 
-## 🛡️ Security
+## Security
 
 The pipeline includes a **Trivy** scan stage:
 ```groovy
