@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flaskapp-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/2coolkalamkaar/jenkins-pipeline-.git'
+    path: helm/flaskapp
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values-staging.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: flaskapp-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flaskapp-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/2coolkalamkaar/jenkins-pipeline-.git'
+    path: helm/flaskapp
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: flaskapp-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

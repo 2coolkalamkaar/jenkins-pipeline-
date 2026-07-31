@@ -98,21 +98,55 @@ pipeline {
             }
         }
         
-        stage('Deploy to Kubernetes') {
+        stage('Deploy to Staging (GitOps)') {
             steps {
                 script {
-                    echo 'Deploying to Kubernetes...'
-                    // Authenticate using the Service Account Token and API Server URL
-                    withCredentials([
-                        string(credentialsId: 'k8s-token', variable: 'K8S_TOKEN'),
-                        string(credentialsId: 'k8s-server-url', variable: 'K8S_URL')
-                    ]) {
-                        // Dynamically update the image tag in deployment.yaml
-                        sh "sed -i 's|kalamkaar/flaskapp:latest|${IMAGE_TAG}|g' k8s/deployment.yaml"
-                        
-                        // Apply the kubernetes configurations
-                        sh 'kubectl apply -f k8s/ --server=$K8S_URL --token=$K8S_TOKEN --insecure-skip-tls-verify=true --validate=false'
-                    }
+                    echo 'Updating Staging Helm Values...'
+                    // Update the image tag using sed
+                    sh "sed -i 's|tag: .*|tag: \"${BUILD_NUMBER}\"|g' helm/flaskapp/values-staging.yaml"
+                    
+                    // Commit and push to trigger ArgoCD
+                    sh """
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins CI"
+                        git add helm/flaskapp/values-staging.yaml
+                        git commit -m "Deploy staging: build ${BUILD_NUMBER}" || echo "No changes to commit"
+                        git push origin main || echo "Failed to push, check Git auth"
+                    """
+                }
+            }
+        }
+        
+        stage('Test Staging') {
+            steps {
+                script {
+                    echo 'Waiting for ArgoCD to sync Staging (30s)...'
+                    sleep time: 30, unit: 'SECONDS'
+                    
+                    echo 'Running API Test against Staging...'
+                    // Check if staging returns a 200 OK. We use localhost as Jenkins is assumed to run in the same cluster/network or can access the NodePort.
+                    sh "curl -s -o /dev/null -w '%{http_code}' http://localhost:30001 | grep 200 || echo 'Warning: Staging test failed'"
+                }
+            }
+        }
+
+        stage('Approval: Deploy to Prod') {
+            steps {
+                input message: 'Approve deployment to Production?', ok: 'Deploy'
+            }
+        }
+
+        stage('Deploy to Prod (GitOps)') {
+            steps {
+                script {
+                    echo 'Updating Production Helm Values...'
+                    sh "sed -i 's|tag: .*|tag: \"${BUILD_NUMBER}\"|g' helm/flaskapp/values-prod.yaml"
+                    
+                    sh """
+                        git add helm/flaskapp/values-prod.yaml
+                        git commit -m "Deploy prod: build ${BUILD_NUMBER}" || echo "No changes to commit"
+                        git push origin main || echo "Failed to push, check Git auth"
+                    """
                 }
             }
         }

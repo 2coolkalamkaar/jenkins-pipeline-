@@ -1,0 +1,8 @@
+replicaCount: 2
+
+image:
+  tag: "latest" # Jenkins will update this via sed
+
+service:
+  type: NodePort
+  nodePort: 30002 # Production port

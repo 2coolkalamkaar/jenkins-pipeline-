@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  repository: kalamkaar/flaskapp
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 5000
+  nodePort: 30000
+
+nameOverride: ""
+fullnameOverride: ""
