@@ -41,6 +41,7 @@ flowchart TD
 * **Helm Templating**: Kubernetes manifests are packaged as a Helm chart, enabling dynamic configurations across different environments (`values-staging.yaml`, `values-prod.yaml`).
 * **Multi-Environment Pipeline**: The pipeline deploys to a **Staging** namespace first, runs automated API tests, and pauses for a **Manual Approval** before deploying to the **Production** namespace.
 * **DevSecOps (Security Scanning)**: Integrated **Trivy** image scanning detects HIGH and CRITICAL vulnerabilities before pushing to the registry.
+* **Disaster Recovery**: Automated backups of the Jenkins server configuration and jobs using the **ThinBackup** plugin, protecting the critical `JENKINS_HOME` directory against data loss.
 * **Parallel Execution**: Demonstrated parallel build and legacy deployment stages to optimize pipeline duration.
 * **Dockerized**: The application is containerized using Alpine Linux to minimize the image footprint and attack surface.
 
